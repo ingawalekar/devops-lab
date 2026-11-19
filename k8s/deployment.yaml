@@ -19,7 +19,8 @@ spec:
     spec:
       containers:
       - name: ganesh-web
-        image: nginx:latest
+        image: ganesh-web:latest
+        imagePullPolicy: Never
 
         ports:
         - containerPort: 80
