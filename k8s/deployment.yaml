@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ganesh-web
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: ganesh-web
+
+  template:
+    metadata:
+      labels:
+        app: ganesh-web
+
+    spec:
+      containers:
+      - name: ganesh-web
+        image: nginx:latest
+
+        ports:
+        - containerPort: 80
