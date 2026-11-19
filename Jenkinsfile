@@ -9,20 +9,56 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t ganesh-web:latest .'
+                sh '''
+                echo "Building Docker Image"
+
+                docker build -t ganesh-web:latest .
+
+                echo "Available Images"
+                docker images | grep ganesh
+                '''
+            }
+        }
+
+        stage('Validation') {
+            steps {
+                sh '''
+                echo "Validating Docker Image"
+
+                docker image inspect ganesh-web:latest > /dev/null
+
+                echo "Image Validation Successful"
+                '''
             }
         }
 
         stage('Deploy') {
             steps {
                 sh '''
-                docker save ganesh-web:latest -o ganesh-web.tar
+                echo "Deployment Stage"
 
-                sudo k3s ctr images import ganesh-web.tar
+                echo "Build completed successfully"
+
+                echo "Ready for Kubernetes deployment"
                 '''
             }
+        }
+    }
+
+    post {
+
+        success {
+            echo 'Pipeline completed successfully'
+        }
+
+        failure {
+            echo 'Pipeline failed'
+        }
+
+        always {
+            echo 'Pipeline execution finished'
         }
     }
 }
