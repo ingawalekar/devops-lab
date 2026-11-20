@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: configmap-demo-ingress
+
+spec:
+  ingressClassName: traefik
+
+  rules:
+  - host: app.ganeshlab.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: configmap-demo-svc
+            port:
+              number: 80
