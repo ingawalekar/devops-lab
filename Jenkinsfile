@@ -3,62 +3,27 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                echo 'Code pulled from GitHub'
-            }
-        }
-
-        stage('Build Docker Image') {
+        stage('Kubernetes Access Test') {
             steps {
                 sh '''
-                echo "Building Docker Image"
-
-                docker build -t ganesh-web:latest .
-
-                echo "Available Images"
-                docker images | grep ganesh
+                kubectl --kubeconfig=/var/jenkins_home/.kube/config get pods
                 '''
             }
         }
 
-        stage('Validation') {
-            steps {
-                sh '''
-                echo "Validating Docker Image"
-
-                docker image inspect ganesh-web:latest > /dev/null
-
-                echo "Image Validation Successful"
-                '''
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh '''
-                echo "Deployment Stage"
-
-                echo "Build completed successfully"
-
-                echo "Ready for Kubernetes deployment"
-                '''
-            }
-        }
     }
 
     post {
-
         success {
-            echo 'Pipeline completed successfully'
+            echo 'Kubernetes Access Successful'
         }
 
         failure {
-            echo 'Pipeline failed'
+            echo 'Kubernetes Access Failed'
         }
 
         always {
-            echo 'Pipeline execution finished'
+            echo 'Pipeline Finished'
         }
     }
 }
