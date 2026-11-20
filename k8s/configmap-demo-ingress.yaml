@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: configmap-demo-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+spec:
+  ingressClassName: traefik
+
+  tls:
+  - hosts:
+    - ganeshlab1.duckdns.org
+    secretName: ganeshlab1-tls
+
+  rules:
+  - host: ganeshlab1.duckdns.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: configmap-demo-svc
+            port:
+              number: 80
