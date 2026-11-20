@@ -3,7 +3,16 @@ pipeline {
 
     stages {
 
-        stage('Kubernetes Access Test') {
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                echo "Building Docker Image"
+                docker build -t ganesh-web:latest .
+                '''
+            }
+        }
+
+        stage('Verify Kubernetes Access') {
             steps {
                 sh '''
                 kubectl --kubeconfig=/var/jenkins_home/.kube/config get pods
@@ -11,15 +20,32 @@ pipeline {
             }
         }
 
+        stage('Restart Deployment') {
+            steps {
+                sh '''
+                kubectl --kubeconfig=/var/jenkins_home/.kube/config \
+                rollout restart deployment ganesh-web
+                '''
+            }
+        }
+
+        stage('Verify Rollout') {
+            steps {
+                sh '''
+                kubectl --kubeconfig=/var/jenkins_home/.kube/config \
+                rollout status deployment/ganesh-web
+                '''
+            }
+        }
     }
 
     post {
         success {
-            echo 'Kubernetes Access Successful'
+            echo 'Deployment Successful'
         }
 
         failure {
-            echo 'Kubernetes Access Failed'
+            echo 'Deployment Failed'
         }
 
         always {
